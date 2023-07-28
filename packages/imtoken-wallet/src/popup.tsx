@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import * as Messaging from "@plasmohq/messaging"
 import * as StorageHook from "@plasmohq/storage/hook"
 
 import * as SecureStorage from "~components/context/secureStorage"
@@ -13,6 +14,7 @@ function IndexPopup() {
 
   const [data, setData] = React.useState("")
   const [count, increase] = React.useReducer((c) => c + 1, 0)
+  const [mnemonic, setMnemonic] = React.useState<string>("")
 
   const [openCount, setOpenCount] = StorageHook.useStorage<number>(
     { key: StorageKey[StorageKey.openCount], instance: storage },
@@ -33,6 +35,21 @@ function IndexPopup() {
 
   return (
     <>
+      <div className="plasmo-flex plasmo-items-center plasmo-justify-center plasmo-h-50 plasmo-w-50">
+        <button
+          onClick={async () => {
+            const resp = await Messaging.sendToBackground({
+              name: "generateMnemonic",
+              body: {}
+            })
+            setMnemonic(resp.mnemonic)
+          }}>
+          Hash TX
+        </button>
+        <span className="plasmo-text-9xl plasmo-font-bold plasmo-mb-2 plasmo-text-yellow-500">
+          {mnemonic}
+        </span>
+      </div>
       <div
         style={{
           display: "flex",
@@ -56,7 +73,7 @@ function IndexPopup() {
           onChange={(e) => setChecked(e.target.checked)}
         />
       </div>
-      <div className="plasmo-flex plasmo-items-center plasmo-justify-center plasmo-h-16 plasmo-w-40">
+      <div>
         <button
           onClick={() => increase()}
           type="button"

@@ -4,23 +4,25 @@ import { SecureStorageKey, StorageKey } from "~utils/storage"
 const watchAndSetSecureStorage = async () => {
   const secureStorage = await StorageUtils.getSecureStorage()
 
-  // 取得所有 SecureStorageKey 用到的 Key，並且逐一監聽（.watch）
-  const secureStorageKeys = Object.keys(StorageUtils.SecureStorageKey)
-  secureStorageKeys.forEach((key, idx) => {
+  // 遍歷 StorageUtils.SecureStorageKey 所有 key 與 value 值，但只篩出 key 值
+  const secureStorageKeys = Object.keys(StorageUtils.SecureStorageKey).filter(
+    (k) => isNaN(Number(k))
+  )
+
+  // 註：不要在 .forEach 中用 async/await，所以這邊使用 for value of
+  for (const key of secureStorageKeys) {
+    console.log(`[background] Watching secure storage key: ${key}`)
+    // 取得所有 SecureStorageKey 用到的 Key，並且逐一監聽（.watch）
     secureStorage.watch({
       [key]: (c) => {
-        console.log(`${idx} ${key}: ${c}`)
+        console.log(`${key}: ${JSON.stringify(c)}`)
       }
     })
-  })
-  // 取得所有 SecureStorageKey 用到的 Key，並且逐一設置預設值
-  const secureStorageValues = Object.values(StorageUtils.SecureStorageKey)
-  // 不要在 .forEach 中用 async/await，所以這邊使用 for value of
-  for (const value of secureStorageValues) {
-    switch (value) {
+    // 取得所有 SecureStorageKey 用到的 Key，並且逐一設置預設值
+    switch (key) {
       case SecureStorageKey[SecureStorageKey.mnemonic]:
         await secureStorage.set(
-          value,
+          key,
           "test test test test test test test test test test test junk"
         )
         break
@@ -37,28 +39,31 @@ const watchAndSetSecureStorage = async () => {
 const watchAndSetStorage = async () => {
   const storage = StorageUtils.getStorage()
 
-  // 取得所有 SecureStorageKey 用到的 Key，並且逐一監聽（.watch）
-  const storageKeys = Object.keys(StorageUtils.StorageKey)
-  storageKeys.forEach((key, idx) => {
+  // 遍歷 StorageUtils.SecureStorageKey 所有 key 與 value 值，但只篩出 key 值
+
+  const storageKeys = Object.keys(StorageUtils.StorageKey).filter((k) =>
+    isNaN(Number(k))
+  )
+
+  // 註：不要在 .forEach 中用 async/await，所以這邊使用 for value of
+  for (const key of storageKeys) {
+    console.log(`[background] Watching storage key: ${key}`)
+    // 取得所有 SecureStorageKey 用到的 Key，並且逐一監聽（.watch）
     storage.watch({
       [key]: (c) => {
-        console.log(`${idx} ${key}: ${c}`)
+        console.log(`${key}: ${JSON.stringify(c)}`)
       }
     })
-  })
-  // 取得所有 SecureStorageKey 用到的 Key，並且逐一設置預設值
-  const storageValues = Object.values(StorageUtils.StorageKey)
-  // 不要在 .forEach 中用 async/await，所以這邊使用 for value of
-  for (const value of storageValues) {
-    switch (value) {
+    // 取得所有 SecureStorageKey 用到的 Key，並且逐一設置預設值
+    switch (key) {
       case StorageKey[StorageKey.serialNumber]:
-        await storage.set(value, "testSerial")
+        await storage.set(key, "testSerial")
         break
       case StorageKey[StorageKey.openCount]:
-        await storage.set(value, 0)
+        await storage.set(key, 0)
         break
       case StorageKey[StorageKey.checked]:
-        await storage.set(value, false)
+        await storage.set(key, false)
         break
       default:
         break
