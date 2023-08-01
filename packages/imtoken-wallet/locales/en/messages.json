@@ -1,0 +1,22 @@
+{
+  "extensionName": {
+    "message": "imToken Wallet",
+    "description": "Name of the extension."
+  },
+  "extensionDescription": {
+    "message": "This is a Chrome extension for the imToken wallet.",
+    "description": "Description of the extension."
+  },
+  "welcome": {
+    "message": "Welcome to,",
+    "description": "'Welcome to' text"
+  },
+  "create": {
+    "message": "Create a wallet",
+    "description": "'Welcome to' text"
+  },
+  "generate_mnemonic": {
+    "message": "Generate nnemonic",
+    "description": "'Welcome to' text"
+  }
+}

@@ -11,13 +11,13 @@ An Account Abstraction browser wallet built with the Plasmo framework.
 ## DEV Mode
 
 ```shell
-% PKG1="imtoken-wallet" && pnpm --filter ${PKG1} dev
+% PKG1="imtoken-wallet" && pnpm --filter ${PKG1} dev --target=chrome-mv3
 ```
 
 ## Build and ZIP
 
 ```shell
-% PKG1="imtoken-wallet" && pnpm --filter ${PKG1} build --zip
+% PKG1="imtoken-wallet" && pnpm --filter ${PKG1} build --zip --target=chrome-mv3
 ```
 
 ## Other Command

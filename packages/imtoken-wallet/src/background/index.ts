@@ -1,5 +1,12 @@
+// 原始位置：background.ts
 import * as StorageUtils from "~utils/storage"
 import { SecureStorageKey, StorageKey } from "~utils/storage"
+
+const main = async () => {
+  console.log(`[browser] ${process.env.PLASMO_BROWSER}`)
+  await watchAndSetSecureStorage()
+  await watchAndSetStorage()
+}
 
 const watchAndSetSecureStorage = async () => {
   const secureStorage = await StorageUtils.getSecureStorage()
@@ -73,11 +80,6 @@ const watchAndSetStorage = async () => {
   // The storage.set promise apparently resolves before the watch listener is registered...
   // So we need to wait a bit before adding the next watch if we want to split the watchers. Otherwise, the second watch will get the first set of change as well.
   await new Promise((resolve) => setTimeout(resolve, 470))
-}
-
-const main = async () => {
-  await watchAndSetSecureStorage()
-  await watchAndSetStorage()
 }
 
 main()
