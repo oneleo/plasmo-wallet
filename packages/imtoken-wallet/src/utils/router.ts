@@ -1,14 +1,14 @@
 import * as React from "react"
-import * as Wouter from "wouter/use-location"
+import * as WouterLocation from "wouter/use-location"
 
 // returns the current hash location in a normalized form
 // (excluding the leading '#' symbol)
 const hashLocation = () => window.location.hash.replace(/^#/, "") || "/"
 
-const hashNavigate = (to) => Wouter.navigate("#" + to)
+const hashNavigate = (to) => WouterLocation.navigate("#" + to)
 
-export const useHashLocation: Wouter.BaseLocationHook = () => {
-  const location = Wouter.useLocationProperty<string>(hashLocation)
+export const useHashLocation: WouterLocation.BaseLocationHook = () => {
+  const location = WouterLocation.useLocationProperty<string>(hashLocation)
   //   const [location, setLocation] = React.useState<string>(
   //     // Wouter.useLocationProperty(hashLocation)
   //     hashLocation
@@ -29,6 +29,7 @@ export const useHashLocation: Wouter.BaseLocationHook = () => {
   //   }, [])
 
   React.useEffect(() => {
+    // 偵測到 Router 跳轉時將視窗移至最左上角
     window.scrollTo(0, 0)
     console.log(`[window] scroll to (0, 0).`)
   }, [location])

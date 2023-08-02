@@ -1,4 +1,6 @@
-// 原始位置：background.ts
+// 本檔原始位置：background.ts
+import { startHub } from "@plasmohq/messaging/pub-sub"
+
 import * as StorageUtils from "~utils/storage"
 import { SecureStorageKey, StorageKey } from "~utils/storage"
 
@@ -6,6 +8,7 @@ const main = async () => {
   console.log(`[browser] ${process.env.PLASMO_BROWSER}`)
   await watchAndSetSecureStorage()
   await watchAndSetStorage()
+  startHub()
 }
 
 const watchAndSetSecureStorage = async () => {
@@ -44,7 +47,7 @@ const watchAndSetSecureStorage = async () => {
 }
 
 const watchAndSetStorage = async () => {
-  const storage = StorageUtils.getStorage()
+  const localStorage = StorageUtils.getLocalStorage()
 
   // 遍歷 StorageUtils.SecureStorageKey 所有 key 與 value 值，但只篩出 key 值
 
@@ -56,7 +59,7 @@ const watchAndSetStorage = async () => {
   for (const key of storageKeys) {
     console.log(`[background] Watching storage key: ${key}`)
     // 取得所有 SecureStorageKey 用到的 Key，並且逐一監聽（.watch）
-    storage.watch({
+    localStorage.watch({
       [key]: (c) => {
         console.log(`${key}: ${JSON.stringify(c)}`)
       }
@@ -64,13 +67,22 @@ const watchAndSetStorage = async () => {
     // 取得所有 SecureStorageKey 用到的 Key，並且逐一設置預設值
     switch (key) {
       case StorageKey[StorageKey.serialNumber]:
-        await storage.set(key, "testSerial")
+        console.log(
+          `[storage] Capacity warning: ${await localStorage.set(
+            key,
+            "testSerial"
+          )}`
+        )
         break
       case StorageKey[StorageKey.openCount]:
-        await storage.set(key, 0)
+        console.log(
+          `[storage] Capacity warning: ${await localStorage.set(key, 0)}`
+        )
         break
       case StorageKey[StorageKey.checked]:
-        await storage.set(key, false)
+        console.log(
+          `[storage] Capacity warning: ${await localStorage.set(key, false)}`
+        )
         break
       default:
         break

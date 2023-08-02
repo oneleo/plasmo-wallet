@@ -12,7 +12,8 @@ export interface StorageConfig {
 export enum StorageKey {
   serialNumber,
   openCount,
-  checked
+  checked,
+  password
 }
 
 // 列舉所有 SecureStorageKey 用到的 Key
@@ -21,7 +22,7 @@ export enum SecureStorageKey {
 }
 
 // 取得本地儲存空間，其值不會復製到 window.localStorage
-export const getStorage = () => {
+export const getLocalStorage = () => {
   const storageConfig: StorageConfig = {
     area: "local"
   }

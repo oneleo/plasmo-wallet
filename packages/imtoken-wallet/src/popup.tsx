@@ -1,13 +1,15 @@
 import * as React from "react"
 import * as Wouter from "wouter"
+import { Route } from "wouter"
 
 import * as Messaging from "@plasmohq/messaging"
-import * as StorageHook from "@plasmohq/storage/hook"
+import * as ContextStorageHook from "@plasmohq/storage/hook"
 
 import * as SecureStorage from "~components/context/secureStorage"
-import * as PopupCreate from "~components/popup/create"
+import * as PopupHome from "~components/popup/01_welcome"
+import * as PopupPassword from "~components/popup/02_password"
+import * as PopupCreate from "~components/popup/03_create"
 import * as UtilsWagmi from "~components/popup/wagmi"
-import * as PopupHome from "~components/popup/welcome"
 import * as UtilsRouter from "~utils/router"
 import * as UtilsStorage from "~utils/storage"
 import { StorageKey } from "~utils/storage"
@@ -15,22 +17,22 @@ import { StorageKey } from "~utils/storage"
 import "~style.css"
 
 function IndexPopup() {
-  const storage = UtilsStorage.getStorage()
+  const storage = UtilsStorage.getLocalStorage()
 
   const [data, setData] = React.useState("")
   const [count, increase] = React.useReducer((c) => c + 1, 0)
   const [mnemonic, setMnemonic] = React.useState<string>("")
 
-  const [openCount, setOpenCount] = StorageHook.useStorage<number>(
+  const [openCount, setOpenCount] = ContextStorageHook.useStorage<number>(
     { key: StorageKey[StorageKey.openCount], instance: storage },
     (s) => (typeof s === "undefined" ? 0 : s)
   )
-  const [checked, setChecked] = StorageHook.useStorage<boolean>(
+  const [checked, setChecked] = ContextStorageHook.useStorage<boolean>(
     { key: StorageKey[StorageKey.checked], instance: storage },
     (s) => (typeof s === "undefined" ? false : s)
   )
 
-  const [serialNumber, setSerialNumber] = StorageHook.useStorage<string>(
+  const [serialNumber, setSerialNumber] = ContextStorageHook.useStorage<string>(
     {
       key: StorageKey[StorageKey.serialNumber],
       instance: storage
@@ -42,9 +44,14 @@ function IndexPopup() {
     <>
       {/* <UtilsWagmi.initWagmi /> */}
       <Wouter.Router hook={UtilsRouter.useHashLocation}>
-        <Wouter.Route path="/" component={PopupHome.Welcome} />
-        <Wouter.Route path="/create" component={PopupCreate.Create} />
+        <Route path="/">
+          <Wouter.Redirect to="/welcome" />
+        </Route>
+        <Route path="/welcome" component={PopupHome.Welcome} />
+        <Route path="/password" component={PopupPassword.Password} />
+        <Route path="/create" component={PopupCreate.Create} />
       </Wouter.Router>
+
       <div className="plasmo-bg-gray-300 plasmo-w-full plasmo-h-full">
         <div className="plasmo-flex plasmo-items-center plasmo-justify-center plasmo-h-50 plasmo-w-50">
           <button
@@ -107,7 +114,7 @@ function IndexPopup() {
 }
 
 const Child = () => {
-  const secureStorage = SecureStorage.useSecureStorage()
+  const secureStorage = React.useContext(SecureStorage.Context)
   const [
     mnemonic,
     setMnemonic,
@@ -116,21 +123,17 @@ const Child = () => {
       setStoreValue: setMnemonicStore,
       remove: removeMnemonic
     }
-  ] = StorageHook.useStorage(
+  ] = ContextStorageHook.useStorage(
     {
       key: "mnemonic",
-      instance: secureStorage.plasmoSecureStorage
+      instance: secureStorage.secureStorage
     },
     (v) => (v === undefined ? "" : v)
   )
   // 使用 SecureStorage 實例來存取和儲存資料
   return (
     <>
-      <input
-        className="plasmo-w-4/5 plasmo-text-lg"
-        onChange={(e) => setMnemonic(e.target.value)}
-        value={mnemonic}
-      />
+      <input onChange={(e) => setMnemonic(e.target.value)} value={mnemonic} />
     </>
   )
 }

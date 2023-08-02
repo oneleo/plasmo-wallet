@@ -4,18 +4,24 @@ import * as SecureStorage from "@plasmohq/storage/secure"
 
 import * as StorageUtils from "~utils/storage"
 
-export const Context = React.createContext<{
-  plasmoSecureStorage: SecureStorage.SecureStorage
-}>(null)
+interface ContextInterface {
+  secureStorage: SecureStorage.SecureStorage
+  setSecureStorage: React.Dispatch<
+    React.SetStateAction<SecureStorage.SecureStorage>
+  >
+}
+
+export const Context = React.createContext<ContextInterface>(null)
 
 export const ContextProvider = ({ children }) => {
   const storageConfig: StorageUtils.StorageConfig = {
     area: "local"
   }
   const [storageReady, setStorageReady] = React.useState<boolean>(false)
-  const [secureStorage, _] = React.useState<SecureStorage.SecureStorage>(
-    new SecureStorage.SecureStorage(storageConfig)
-  )
+  const [secureStorage, setSecureStorage] =
+    React.useState<SecureStorage.SecureStorage>(
+      new SecureStorage.SecureStorage(storageConfig)
+    )
 
   React.useEffect(() => {
     secureStorage
@@ -28,7 +34,13 @@ export const ContextProvider = ({ children }) => {
   }
 
   return (
-    <Context.Provider value={{ plasmoSecureStorage: secureStorage }}>
+    <Context.Provider
+      value={
+        {
+          secureStorage: secureStorage,
+          setSecureStorage: setSecureStorage
+        } as ContextInterface
+      }>
       {children}
     </Context.Provider>
   )
@@ -40,6 +52,7 @@ export const useSecureStorage = () => {
 
 /* 
 // 此 SecureStorageContext 使用方式
+import * as React from "react"
 import * as SecureStorage from "~components/context/secureStorage"
 
 const App = () => {
@@ -53,7 +66,7 @@ const App = () => {
 }
 
 const Child = () => {
-  const secureStorage = SecureStorage.useSecureStorage()
+  const secureStorage = React.useContext(SecureStorage.Context)
   const [
     mnemonic,
     setMnemonic,
@@ -65,7 +78,7 @@ const Child = () => {
   ] = StorageHook.useStorage(
     {
       key: "mnemonic",
-      instance: secureStorage.plasmoSecureStorage
+      instance: secureStorage.secureStorage
     },
     (v) => (v === undefined ? "" : v)
   )
