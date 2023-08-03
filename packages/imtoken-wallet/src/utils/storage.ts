@@ -13,7 +13,10 @@ export enum StorageKey {
   serialNumber,
   openCount,
   checked,
-  password
+  password,
+  lastClosedTime,
+  hasWallet,
+  test
 }
 
 // 列舉所有 SecureStorageKey 用到的 Key

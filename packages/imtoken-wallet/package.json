@@ -35,7 +35,7 @@
   },
   "//": "manifest.json",
   "manifest": {
-    "default_locale": "zh_TW",
+    "default_locale": "en",
     "host_permissions": [
       "http://*/*",
       "https://*/*",

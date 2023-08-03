@@ -18,5 +18,9 @@
   "generate_mnemonic": {
     "message": "Generate nnemonic",
     "description": "'Welcome to' text"
+  },
+  "set_password": {
+    "message": "set_password",
+    "description": "'Welcome to' text"
   }
 }

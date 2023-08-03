@@ -1,13 +1,24 @@
 import * as React from "react"
 import * as WouterLocation from "wouter/use-location"
 
+export enum RoutePath {
+  root = `/`,
+  clear = `/clear`,
+  start = `/start`,
+  welcome = `/welcome`,
+  password = `/password`,
+  store = `/store`,
+  create = `/create`
+}
+
 // returns the current hash location in a normalized form
 // (excluding the leading '#' symbol)
-const hashLocation = () => window.location.hash.replace(/^#/, "") || "/"
-
-const hashNavigate = (to) => WouterLocation.navigate("#" + to)
 
 export const useHashLocation: WouterLocation.BaseLocationHook = () => {
+  const hashLocation = () => window.location.hash.replace(/^#/, "") || "/"
+
+  const hashNavigate = (to) => WouterLocation.navigate("#" + to)
+
   const location = WouterLocation.useLocationProperty<string>(hashLocation)
   //   const [location, setLocation] = React.useState<string>(
   //     // Wouter.useLocationProperty(hashLocation)

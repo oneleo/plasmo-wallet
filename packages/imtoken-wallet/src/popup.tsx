@@ -3,137 +3,56 @@ import * as Wouter from "wouter"
 import { Route } from "wouter"
 
 import * as Messaging from "@plasmohq/messaging"
+import * as MessagingHook from "@plasmohq/messaging/hook"
 import * as ContextStorageHook from "@plasmohq/storage/hook"
 
+import * as ContextPassword from "~components/context/password"
 import * as SecureStorage from "~components/context/secureStorage"
-import * as PopupHome from "~components/popup/01_welcome"
+import * as PopupClear from "~components/popup/00_clear"
+import * as PopupStart from "~components/popup/00_start"
+import * as PopupWelcome from "~components/popup/01_welcome"
+import * as PopupStore from "~components/popup/02_02_store"
 import * as PopupPassword from "~components/popup/02_password"
 import * as PopupCreate from "~components/popup/03_create"
 import * as UtilsWagmi from "~components/popup/wagmi"
+import { PortName } from "~utils/port"
 import * as UtilsRouter from "~utils/router"
+import { RoutePath } from "~utils/router"
 import * as UtilsStorage from "~utils/storage"
 import { StorageKey } from "~utils/storage"
 
 import "~style.css"
 
+import { disconnect } from "process"
+
 function IndexPopup() {
-  const storage = UtilsStorage.getLocalStorage()
+  React.useEffect(() => {
+    // 目前 Plasmo Port API 不支援傳送 onDisconnect 事件
+    // const popupPort = MessagingHook.usePort("popupClosed")
 
-  const [data, setData] = React.useState("")
-  const [count, increase] = React.useReducer((c) => c + 1, 0)
-  const [mnemonic, setMnemonic] = React.useState<string>("")
+    // 所以使用 Chrome 原生 Port API 來註冊一組 "popup" port
+    // background 也同時會監聽 "popup" port 的連線
+    chrome.runtime.connect({ name: PortName[PortName.popup] })
+  }, [])
 
-  const [openCount, setOpenCount] = ContextStorageHook.useStorage<number>(
-    { key: StorageKey[StorageKey.openCount], instance: storage },
-    (s) => (typeof s === "undefined" ? 0 : s)
-  )
-  const [checked, setChecked] = ContextStorageHook.useStorage<boolean>(
-    { key: StorageKey[StorageKey.checked], instance: storage },
-    (s) => (typeof s === "undefined" ? false : s)
-  )
-
-  const [serialNumber, setSerialNumber] = ContextStorageHook.useStorage<string>(
-    {
-      key: StorageKey[StorageKey.serialNumber],
-      instance: storage
-    },
-    (s) => (typeof s === "undefined" ? "" : s)
-  )
-
+  // 注意：以下若使用 console.log，請使用 Inspect Popup 的 Dev Tools 查看，而非 Service Worker 的 Dev Tools
   return (
     <>
       {/* <UtilsWagmi.initWagmi /> */}
       <Wouter.Router hook={UtilsRouter.useHashLocation}>
-        <Route path="/">
-          <Wouter.Redirect to="/welcome" />
+        <Route path={RoutePath.root}>
+          {/* <Wouter.Redirect to={RoutePath.clear} /> */}
+          <Wouter.Redirect to={RoutePath.start} />
         </Route>
-        <Route path="/welcome" component={PopupHome.Welcome} />
-        <Route path="/password" component={PopupPassword.Password} />
-        <Route path="/create" component={PopupCreate.Create} />
+        <Route path={RoutePath.clear} component={PopupClear.Clear} />
+        <Route path={RoutePath.start} component={PopupStart.Start} />
+        <Route path={RoutePath.welcome} component={PopupWelcome.Welcome} />
+        <ContextPassword.Provider>
+          <Route path={RoutePath.password} component={PopupPassword.Password} />
+          <Route path={RoutePath.store} component={PopupStore.Store} />
+        </ContextPassword.Provider>
+        <Route path={RoutePath.create} component={PopupCreate.Create} />
       </Wouter.Router>
-
-      <div className="plasmo-bg-gray-300 plasmo-w-full plasmo-h-full">
-        <div className="plasmo-flex plasmo-items-center plasmo-justify-center plasmo-h-50 plasmo-w-50">
-          <button
-            onClick={async () => {
-              const resp = await Messaging.sendToBackground({
-                name: "generateMnemonic",
-                body: {}
-              })
-              setMnemonic(resp.mnemonic)
-            }}>
-            Hash TX
-          </button>
-          <span className="plasmo-text-9xl plasmo-font-bold plasmo-mb-2 plasmo-text-yellow-500">
-            {mnemonic}
-          </span>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            padding: 16
-          }}>
-          <h1>
-            Welcome to your <a href="https://www.plasmo.com">Plasmo</a>{" "}
-            Extension!
-          </h1>
-          <input onChange={(e) => setData(e.target.value)} value={data} />
-          <footer>Crafted by @PlamoHQ</footer>
-        </div>
-        <div>
-          <input
-            onChange={(e) => setSerialNumber(e.target.value)}
-            value={serialNumber}
-          />
-          <input
-            type={"checkbox"}
-            checked={checked}
-            onChange={(e) => setChecked(e.target.checked)}
-          />
-        </div>
-        <div>
-          <button
-            onClick={() => increase()}
-            type="button"
-            className="plasmo-flex plasmo-flex-row plasmo-items-center plasmo-px-4 plasmo-py-2 plasmo-text-sm plasmo-rounded-lg plasmo-transition-all plasmo-border-none
-      plasmo-shadow-lg hover:plasmo-shadow-md
-      active:plasmo-scale-105 plasmo-bg-slate-50 hover:plasmo-bg-slate-100 plasmo-text-slate-800 hover:plasmo-text-slate-900">
-            Count:
-            <span className="plasmo-inline-flex plasmo-items-center plasmo-justify-center plasmo-w-8 plasmo-h-4 plasmo-ml-2 plasmo-text-xs plasmo-font-semibold plasmo-rounded-full">
-              {count}
-            </span>
-          </button>
-        </div>
-        <SecureStorage.ContextProvider>
-          <Child />
-        </SecureStorage.ContextProvider>
-      </div>
-    </>
-  )
-}
-
-const Child = () => {
-  const secureStorage = React.useContext(SecureStorage.Context)
-  const [
-    mnemonic,
-    setMnemonic,
-    {
-      setRenderValue: setMnemonicRender,
-      setStoreValue: setMnemonicStore,
-      remove: removeMnemonic
-    }
-  ] = ContextStorageHook.useStorage(
-    {
-      key: "mnemonic",
-      instance: secureStorage.secureStorage
-    },
-    (v) => (v === undefined ? "" : v)
-  )
-  // 使用 SecureStorage 實例來存取和儲存資料
-  return (
-    <>
-      <input onChange={(e) => setMnemonic(e.target.value)} value={mnemonic} />
     </>
   )
 }

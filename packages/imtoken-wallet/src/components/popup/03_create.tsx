@@ -2,11 +2,23 @@ import * as React from "react"
 
 import * as Messaging from "@plasmohq/messaging"
 
-export const Create = () => {
+import * as ContextPassword from "~components/context/password"
+import { MessagingName } from "~utils/messaging"
+import { RoutePath } from "~utils/router"
+
+export const Create: React.FunctionComponent = () => {
   const [mnemonic, setMnemonic] = React.useState<string>("")
+  const contextPassword = React.useContext(ContextPassword.Context)
+
+  React.useEffect(() => {
+    console.log(`contextPassword: ${contextPassword.password}`)
+  }, [])
+
   const handlerGenerateMnemonic = async () => {
     const resp = await Messaging.sendToBackground({
-      name: "generateMnemonic",
+      name: MessagingName[
+        MessagingName.generateMnemonic
+      ] as keyof Messaging.MessagesMetadata,
       body: {}
     })
     setMnemonic(resp.mnemonic)
@@ -15,7 +27,9 @@ export const Create = () => {
   const handlerTest = async () => {
     const password = "p@ssw0rd"
     const resp = await Messaging.sendToBackground({
-      name: "saveToStorage",
+      name: MessagingName[
+        MessagingName.saveToLocalStorage
+      ] as keyof Messaging.MessagesMetadata,
       body: { key: "password", rawValue: btoa(password) }
     })
   }

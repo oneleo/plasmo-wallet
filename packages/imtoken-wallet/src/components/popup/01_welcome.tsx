@@ -1,10 +1,14 @@
+import * as React from "react"
 import * as Wouter from "wouter"
 
-export const Welcome = () => {
+import { RoutePath } from "~utils/router"
+
+export const Welcome: React.FunctionComponent = () => {
   const [location, setLocation] = Wouter.useLocation()
+
   const handleLocation = () => {
-    // setLocation("/password")
-    setLocation("/create")
+    // 跳轉至輸入密碼頁面
+    setLocation(RoutePath.password)
   }
 
   return (
@@ -17,8 +21,8 @@ export const Welcome = () => {
       </div>
       <div className="plasmo-flex plasmo-flex-row plasmo-justify-evenly plasmo-content-center plasmo-flex-no-wrap">
         <button
-          className="plasmo-order-1 plasmo-bg-blue-400 hover:plasmo-bg-blue-600 plasmo-text-white plasmo-py-3 plasmo-px-4"
-          onClick={handleLocation}>
+          onClick={handleLocation}
+          className="plasmo-order-1 plasmo-bg-blue-400 hover:plasmo-bg-blue-600 plasmo-text-white plasmo-py-3 plasmo-px-4">
           {chrome.i18n.getMessage("create")}
         </button>
       </div>

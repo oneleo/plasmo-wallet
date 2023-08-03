@@ -1,6 +1,6 @@
 import * as bip39 from "bip39"
 
-import * as PlasmoMessaging from "@plasmohq/messaging"
+import * as Messaging from "@plasmohq/messaging"
 
 export type RequestBody = {}
 
@@ -8,7 +8,7 @@ export type ResponseBody = {
   mnemonic: string
 }
 
-const handler: PlasmoMessaging.PlasmoMessaging.MessageHandler<
+const handler: Messaging.PlasmoMessaging.MessageHandler<
   RequestBody,
   ResponseBody
 > = async (req, res) => {

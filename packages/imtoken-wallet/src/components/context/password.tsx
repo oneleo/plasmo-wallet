@@ -10,7 +10,7 @@ export const Context = React.createContext<ContextInterface>({
   setPassword: (password: string) => {}
 })
 
-export const ContextProvider = ({ children }) => {
+export const Provider = ({ children }) => {
   // 暫時存放密碼
   const [password, setPassword] = React.useState("")
 

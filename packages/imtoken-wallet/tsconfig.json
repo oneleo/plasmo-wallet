@@ -7,7 +7,7 @@
     "./**/*.tsx",
     "src/background/messages/generateMnemonic.ts",
     "src/utils/wagmi.tsx",
-    "src/background/messages/saveToStorage.ts"
+    "src/background/messages/saveToLocalStorage.ts"
   ],
   "compilerOptions": {
     "paths": {
