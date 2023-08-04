@@ -32,7 +32,20 @@ function IndexPopup() {
 
     // 所以使用 Chrome 原生 Port API 來註冊一組 "popup" port
     // background 也同時會監聽 "popup" port 的連線
-    chrome.runtime.connect({ name: PortName[PortName.popup] })
+    const port = chrome.runtime.connect({ name: PortName[PortName.popup] })
+
+    // 設定連線解除時的監聽器
+    const handlerTest = async () => {
+      // 在這裡做一些必要的清理工作
+      console.log("Popup 視窗已關閉")
+    }
+
+    port.onDisconnect.addListener(handlerTest)
+
+    // 移除監聽器以避免記憶體洩漏
+    return () => {
+      port.onDisconnect.removeListener(handlerTest)
+    }
   }, [])
 
   // 注意：以下若使用 console.log，請使用 Inspect Popup 的 Dev Tools 查看，而非 Service Worker 的 Dev Tools

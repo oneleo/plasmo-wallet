@@ -1,5 +1,10 @@
 // 本檔原始位置：background.ts
 // 本檔會在 Chrome Extension 一執行載入至後臺
+// Background 的 Lifecycle 參考：https://developer.chrome.com/docs/extensions/mv3/service_workers/service-worker-lifecycle/
+// 注意：Background Event = Extension Service Worker Event > Extension Event = chrome.runtime API
+// Background Event 參考：https://developer.chrome.com/docs/extensions/mv3/service_workers/events/
+// Extension Event 參考：https://developer.chrome.com/docs/extensions/reference/runtime/
+
 import * as Messaging from "@plasmohq/messaging"
 import * as MessagingHook from "@plasmohq/messaging/hook"
 import * as MessagingHub from "@plasmohq/messaging/pub-sub"
@@ -9,11 +14,16 @@ import { PortName } from "~utils/port"
 import * as UtilsStorage from "~utils/storage"
 import { SecureStorageKey, StorageKey } from "~utils/storage"
 
+// 目前已了解 Plasmo Storage、Messaging、
+// 目前還在研究 Wouter、Context
+// 還尚需要知道 Port 長久連接監聽、Window 事件訂閱
+// 打算透過實作的方式來掌握 Plasmo Storage、Messaging 功能
+
 const main = async () => {
   console.log(`[background] Detect browser: ${process.env.PLASMO_BROWSER}`)
 
-  // 當 Popup 被關閉時，保存目前時間
-  await popupClosed()
+  // 監聽所有 Port 連線，並設置對應的處理方式
+  await portHandlers()
 
   // 註冊所有 Plasmo Storage 的 StorageKey 與 SecureStorageKey 事件
   await watchAndSetSecureStorage()
@@ -24,44 +34,58 @@ const main = async () => {
   MessagingHub.startHub()
 }
 
-const popupClosed = async () => {
-  chrome.runtime.onConnect.addListener(async (port) => {
-    // 監聽來自於 popup.ts 來的 "popup" port 連線
-    if (port.name == PortName[PortName.popup]) {
-      port.onDisconnect.addListener(async () => {
-        // 無法在 background.ts 中使用 Messaging，錯誤訊息：
-        // Uncaught (in promise) Error: Could not establish connection. Receiving end does not exist. Promise.then (async) (anonymous)
+const portHandlers = async () => {
+  // 一次性連接：Messaging：chrome.runtime.onConnect：
+  // https://developer.chrome.com/docs/extensions/mv3/messaging/#simple
+  // 不間斷連接：Port：chrome.runtime.onMessage：
+  // https://developer.chrome.com/docs/extensions/mv3/messaging/#connect
 
-        // Messaging.sendToBackground({
-        //   name: MessagingKey[MessagingKey.saveToLocalStorage],
-        //   body: {
-        //     key: StorageKey[StorageKey.closedTime],
-        //     rawValue: new Date().getTime()
-        //   }
-        // }).then((resp) => {
-        //   console.log(`resp: ${JSON.stringify(resp, null, 2)}`)
-        // })
-
-        // 當 Popup 被關閉時，保存目前時間
-        const localStorage = UtilsStorage.getLocalStorage()
-        // 寫入資料
-        const warning = await localStorage.set(
-          StorageKey[StorageKey.lastClosedTime],
-          new Date().getTime()
-        )
-
-        // 讀取資料以確認已正確寫入
-        console.log(
-          `[port][storage] Stored key: ${
-            StorageKey[StorageKey.lastClosedTime]
-          }, value = ${await localStorage.get(
-            StorageKey[StorageKey.lastClosedTime]
-          )}`
-        )
-
-        console.log(`[background] popup has been closed`)
-      })
+  // 羅列所有 Port 的長期連線，以及事件的處理方式
+  const handlerPortsConnect = async (port: chrome.runtime.Port) => {
+    switch (port.name) {
+      // 來自於 popup.ts 來的 "popup" port 連線
+      case PortName[PortName.popup]:
+        port.onDisconnect.addListener(handlerPopupClosed) // 當 Port 斷連時的處理方式
+        break
+      default:
+        break
     }
+
+    // 因無法為 port 設立 port.xxx.removeListener 所以設置 null 讓 GC 自動回收
+    // port.onDisconnect.removeListener(handlerPopupClosed)
+    port = null
+  }
+
+  const handlerPopupClosed = async () => {
+    // 當 Popup 被關閉時，保存目前時間
+    const localStorage = UtilsStorage.getLocalStorage()
+    // 寫入資料
+    const warning = await localStorage.set(
+      StorageKey[StorageKey.lastClosedTime],
+      new Date().getTime()
+    )
+
+    // 讀取資料以確認已正確寫入
+    console.log(
+      `[port][storage] Stored key: ${
+        StorageKey[StorageKey.lastClosedTime]
+      }, value = ${await localStorage.get(
+        StorageKey[StorageKey.lastClosedTime]
+      )}`
+    )
+    console.log(`[background] popup has been closed`)
+    // 註：因為 Port 也算是 Messaging 的一種，所以不要和 Messaging 形成巢狀監聽
+    // 參考：https://developer.chrome.com/docs/extensions/mv3/service_workers/events/#declare-events
+  }
+
+  // 監聽所有 Port 的長期連線
+  chrome.runtime.onConnect.addListener(handlerPortsConnect)
+
+  // 當關閉 Background 時，移除所有監聽以避免記憶體洩漏
+  chrome.runtime.onSuspend.removeListener(async () => {
+    // 移除監聽所有 Port 的長期連線
+    chrome.runtime.onConnect.removeListener(handlerPortsConnect)
+    console.log(`[background] background has been closed`)
   })
 }
 
