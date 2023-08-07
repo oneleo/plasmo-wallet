@@ -15,7 +15,9 @@ const handler: Messaging.PlasmoMessaging.MessageHandler<
   RequestBody,
   ResponseBody
 > = async (req, res) => {
-  // console.log(`[messaging][saveToStorage] Request: ${JSON.stringify(req)}`)
+  console.log(
+    `[messaging][loadFromLocalStorage] Request: ${JSON.stringify(req)}`
+  )
 
   const localStorage = UtilsStorage.getLocalStorage()
 

@@ -8,7 +8,8 @@ export enum RoutePath {
   welcome = `/welcome`,
   password = `/password`,
   store = `/store`,
-  create = `/create`
+  create = `/create`,
+  wallet = `/wallet`
 }
 
 // returns the current hash location in a normalized form

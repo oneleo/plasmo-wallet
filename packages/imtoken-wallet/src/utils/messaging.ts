@@ -2,6 +2,8 @@
 // 此值必須與 src/background/messages/ 裡的檔名一致
 export enum MessagingName {
   generateMnemonic,
+  validateMnemonic,
   saveToLocalStorage,
-  loadFromLocalStorage
+  loadFromLocalStorage,
+  cryptoSubtle
 }

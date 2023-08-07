@@ -14,6 +14,7 @@ import * as PopupWelcome from "~components/popup/01_welcome"
 import * as PopupStore from "~components/popup/02_02_store"
 import * as PopupPassword from "~components/popup/02_password"
 import * as PopupCreate from "~components/popup/03_create"
+import * as PopupWallet from "~components/popup/04_wallet"
 import * as UtilsWagmi from "~components/popup/wagmi"
 import { PortName } from "~utils/port"
 import * as UtilsRouter from "~utils/router"
@@ -62,9 +63,9 @@ function IndexPopup() {
         <Route path={RoutePath.welcome} component={PopupWelcome.Welcome} />
         <ContextPassword.Provider>
           <Route path={RoutePath.password} component={PopupPassword.Password} />
-          <Route path={RoutePath.store} component={PopupStore.Store} />
+          {/* <Route path={RoutePath.store} component={PopupStore.Store} /> */}
+          <Route path={RoutePath.create} component={PopupCreate.Create} />
         </ContextPassword.Provider>
-        <Route path={RoutePath.create} component={PopupCreate.Create} />
       </Wouter.Router>
     </>
   )

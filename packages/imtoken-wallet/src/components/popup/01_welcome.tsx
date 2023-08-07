@@ -1,6 +1,7 @@
 import * as React from "react"
 import * as Wouter from "wouter"
 
+import { LocaleName } from "~utils/locale"
 import { RoutePath } from "~utils/router"
 
 export const Welcome: React.FunctionComponent = () => {
@@ -15,7 +16,7 @@ export const Welcome: React.FunctionComponent = () => {
     <>
       <div className="plasmo-text-2xl">
         <span className="plasmo-text-2xl">
-          {chrome.i18n.getMessage("welcome")}
+          {chrome.i18n.getMessage(LocaleName[LocaleName.welcome])}
         </span>
         <span className="plasmo-m-3 plasmo-animate-pulse">imToken</span>
       </div>
@@ -23,7 +24,7 @@ export const Welcome: React.FunctionComponent = () => {
         <button
           onClick={handleLocation}
           className="plasmo-order-1 plasmo-bg-blue-400 hover:plasmo-bg-blue-600 plasmo-text-white plasmo-py-3 plasmo-px-4">
-          {chrome.i18n.getMessage("create")}
+          {chrome.i18n.getMessage(LocaleName[LocaleName.create])}
         </button>
       </div>
     </>

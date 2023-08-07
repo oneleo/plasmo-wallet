@@ -14,7 +14,10 @@ const handler: Messaging.PlasmoMessaging.MessageHandler<
 > = async (req, res) => {
   console.log(`[messaging][generateMnemonic] Request: ${JSON.stringify(req)}`)
 
-  let mnemonic = bip39.generateMnemonic()
+  bip39.setDefaultWordlist("english")
+
+  const mnemonic = bip39.generateMnemonic(128) // 128 bits = 12 words, 256 bits = 24 words
+
   res.send({
     mnemonic: mnemonic
   })

@@ -1,6 +1,6 @@
 {
   "name": "imtoken-wallet",
-  "displayName": "Imtoken wallet",
+  "displayName": "__MSG_extensionName__",
   "version": "0.0.1",
   "description": "imToken account abstraction wallet.",
   "author": "imToken Labs <irara.chen@token.im>",
@@ -35,6 +35,7 @@
   },
   "//": "manifest.json",
   "manifest": {
+    "name": "__MSG_extensionName__",
     "default_locale": "en",
     "host_permissions": [
       "http://*/*",

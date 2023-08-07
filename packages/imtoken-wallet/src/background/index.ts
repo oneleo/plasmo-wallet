@@ -5,6 +5,8 @@
 // Background Event 參考：https://developer.chrome.com/docs/extensions/mv3/service_workers/events/
 // Extension Event 參考：https://developer.chrome.com/docs/extensions/reference/runtime/
 
+import * as IconUrlNotifications from "url:assets/icon.png"
+
 import * as Messaging from "@plasmohq/messaging"
 import * as MessagingHook from "@plasmohq/messaging/hook"
 import * as MessagingHub from "@plasmohq/messaging/pub-sub"
@@ -40,6 +42,16 @@ const portHandlers = async () => {
   // 不間斷連接：Port：chrome.runtime.onMessage：
   // https://developer.chrome.com/docs/extensions/mv3/messaging/#connect
 
+  const richNotifications = (title: string, message: string) => {
+    // 註：使用 Rich Notifications API 需開啟 Chrome 及 MacOS/Windows 通知權限
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: IconUrlNotifications.default,
+      title: `${title}`,
+      message: `${message}`
+    })
+  }
+
   // 羅列所有 Port 的長期連線，以及事件的處理方式
   const handlerPortsConnect = async (port: chrome.runtime.Port) => {
     switch (port.name) {
@@ -59,12 +71,11 @@ const portHandlers = async () => {
   const handlerPopupClosed = async () => {
     // 當 Popup 被關閉時，保存目前時間
     const localStorage = UtilsStorage.getLocalStorage()
-    // 寫入資料
+    // 寫入時間資料
     const warning = await localStorage.set(
       StorageKey[StorageKey.lastClosedTime],
       new Date().getTime()
     )
-
     // 讀取資料以確認已正確寫入
     console.log(
       `[port][storage] Stored key: ${
@@ -73,7 +84,8 @@ const portHandlers = async () => {
         StorageKey[StorageKey.lastClosedTime]
       )}`
     )
-    console.log(`[background] popup has been closed`)
+    console.log(`[background] Popup has been closed`)
+    richNotifications("background", "Popup has been closed")
     // 註：因為 Port 也算是 Messaging 的一種，所以不要和 Messaging 形成巢狀監聽
     // 參考：https://developer.chrome.com/docs/extensions/mv3/service_workers/events/#declare-events
   }
@@ -82,10 +94,12 @@ const portHandlers = async () => {
   chrome.runtime.onConnect.addListener(handlerPortsConnect)
 
   // 當關閉 Background 時，移除所有監聽以避免記憶體洩漏
-  chrome.runtime.onSuspend.removeListener(async () => {
+  // 註：這邊應無法觸發到，要再想其他方法
+  chrome.runtime.onSuspend.addListener(async () => {
     // 移除監聽所有 Port 的長期連線
     chrome.runtime.onConnect.removeListener(handlerPortsConnect)
-    console.log(`[background] background has been closed`)
+    console.log(`[background] Background has been closed`)
+    richNotifications("background", "Background has been closed")
   })
 }
 

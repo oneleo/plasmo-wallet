@@ -19,8 +19,28 @@
     "message": "Generate nnemonic",
     "description": "'Welcome to' text"
   },
+  "check_and_next": {
+    "message": "check_and_next",
+    "description": "'Welcome to' text"
+  },
   "set_password": {
     "message": "set_password",
+    "description": "'Welcome to' text"
+  },
+  "errorMessage": {
+    "message": "errorMessage:",
+    "description": "'Welcome to' text"
+  },
+  "errorPassword": {
+    "message": "Password cannot be empty",
+    "description": "'Welcome to' text"
+  },
+  "errorMnemonic": {
+    "message": "errorMnemonic",
+    "description": "'Welcome to' text"
+  },
+  "replaceMnemonic": {
+    "message": "replaceMnemonic?",
     "description": "'Welcome to' text"
   }
 }
