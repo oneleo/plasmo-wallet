@@ -55,7 +55,6 @@ function IndexPopup() {
       {/* <UtilsWagmi.initWagmi /> */}
       <Wouter.Router hook={UtilsRouter.useHashLocation}>
         <Route path={RoutePath.root}>
-          {/* <Wouter.Redirect to={RoutePath.clear} /> */}
           <Wouter.Redirect to={RoutePath.start} />
         </Route>
         <Route path={RoutePath.clear} component={PopupClear.Clear} />

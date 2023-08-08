@@ -12,6 +12,8 @@ An Account Abstraction browser wallet built with the Plasmo framework.
 
 ```shell
 % PKG1="imtoken-wallet" && pnpm --filter ${PKG1} dev --target=chrome-mv3
+% PKG1="imtoken-wallet" && pnpm --filter ${PKG1} dev --target=chrome-mv2
+% PKG1="imtoken-wallet" && pnpm --filter ${PKG1} dev --target=firefox-mv2
 ```
 
 ## Build and ZIP

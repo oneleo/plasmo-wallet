@@ -16,7 +16,7 @@
     "description": "'Welcome to' text"
   },
   "generate_mnemonic": {
-    "message": "產生助記詞",
+    "message": "Generate nnemonic",
     "description": "'Welcome to' text"
   },
   "check_and_next": {
