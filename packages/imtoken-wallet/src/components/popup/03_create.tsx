@@ -101,41 +101,74 @@ export const Create: React.FunctionComponent = () => {
       // const salt = crypto.getRandomValues(new Uint8Array(16))
 
       // 使用密碼加密助記詞
-      const data1 = (
+      const wallet = [
+        (
+          await Messaging.sendToBackground({
+            name: MessagingName[
+              MessagingName.cryptoSubtle
+            ] as keyof Messaging.MessagesMetadata,
+            body: {
+              password: password,
+              data: mnemonic,
+              keyUsages: "encrypt"
+            }
+          })
+        ).data
+      ]
+
+      console.log(`wallet: ${wallet[0]}`)
+
+      // 透過 Messaging 將加密後的助記詞存入 LocalStorage 中
+      const warning = (
         await Messaging.sendToBackground({
           name: MessagingName[
-            MessagingName.cryptoSubtle
+            MessagingName.saveToLocalStorage
           ] as keyof Messaging.MessagesMetadata,
           body: {
-            password: password,
-            data: mnemonic,
-            keyUsages: "encrypt"
+            key: StorageKey[StorageKey.wallet],
+            rawValue: wallet
           }
         })
-      ).data
+      ).warning
 
-      console.log(`data1: ${data1}`)
+      if (warning) {
+        setError(
+          `${chrome.i18n.getMessage(
+            LocaleName[LocaleName.errorMessage]
+          )} ${warning}`
+        )
+        return
+      }
 
-      // 儲存助記詞
-      // ...
+      // 透過 Messaging 將加密後的助記詞從 LocalStorage 中讀取出來
+      const walletFromLocalStorage = (
+        await Messaging.sendToBackground({
+          name: MessagingName[
+            MessagingName.loadFromLocalStorage
+          ] as keyof Messaging.MessagesMetadata,
+          body: {
+            key: StorageKey[StorageKey.wallet]
+          }
+        })
+      ).value
 
       // 使用密碼解密助記詞
-      const data2 = (
+      const decoding = (
         await Messaging.sendToBackground({
           name: MessagingName[
             MessagingName.cryptoSubtle
           ] as keyof Messaging.MessagesMetadata,
           body: {
             password: password,
-            data: data1,
+            data: walletFromLocalStorage[0],
             keyUsages: "decrypt"
           }
         })
       ).data
 
-      console.log(`data2: ${data2}`)
+      console.log(`decoding: ${decoding}`)
 
-      //setLocation(RoutePath.wallet)
+      setLocation(RoutePath.wallet)
     }
   }, [mnemonic])
 

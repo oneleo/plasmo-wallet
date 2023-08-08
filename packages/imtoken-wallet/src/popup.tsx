@@ -65,6 +65,7 @@ function IndexPopup() {
           <Route path={RoutePath.password} component={PopupPassword.Password} />
           {/* <Route path={RoutePath.store} component={PopupStore.Store} /> */}
           <Route path={RoutePath.create} component={PopupCreate.Create} />
+          <Route path={RoutePath.wallet} component={PopupWallet.Wallet} />
         </ContextPassword.Provider>
       </Wouter.Router>
     </>

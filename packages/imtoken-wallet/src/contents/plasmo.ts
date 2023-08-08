@@ -5,7 +5,7 @@ export const config: PlasmoCSConfig = {
 }
 
 window.addEventListener("load", () => {
-  console.log("content script loaded")
+  console.log("plasmo content script loaded")
 
   document.body.style.background = "pink"
 })

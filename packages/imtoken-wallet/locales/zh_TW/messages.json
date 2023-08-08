@@ -1,14 +1,14 @@
 {
   "extensionName": {
-    "message": "imToken 钱包",
+    "message": "imToken 錢包",
     "description": "Name of the extension."
   },
   "extensionDescription": {
-    "message": "这是一个 imToken 钱包的 Chrome 插件。",
+    "message": "這是一個 imToken 錢包的 Chrome 擴充套件。",
     "description": "Description of the extension."
   },
   "welcome": {
-    "message": "欢迎您选用，",
+    "message": "Welcome to,",
     "description": "'Welcome to' text"
   },
   "create": {

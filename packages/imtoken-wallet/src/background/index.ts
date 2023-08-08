@@ -5,7 +5,7 @@
 // Background Event 參考：https://developer.chrome.com/docs/extensions/mv3/service_workers/events/
 // Extension Event 參考：https://developer.chrome.com/docs/extensions/reference/runtime/
 
-import * as IconUrlNotifications from "url:assets/icon.png"
+import IconUrlNotifications from "url:assets/icon.development.png"
 
 import * as Messaging from "@plasmohq/messaging"
 import * as MessagingHook from "@plasmohq/messaging/hook"
@@ -46,7 +46,7 @@ const portHandlers = async () => {
     // 註：使用 Rich Notifications API 需開啟 Chrome 及 MacOS/Windows 通知權限
     chrome.notifications.create({
       type: "basic",
-      iconUrl: IconUrlNotifications.default,
+      iconUrl: IconUrlNotifications,
       title: `${title}`,
       message: `${message}`
     })

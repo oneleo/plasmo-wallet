@@ -51,14 +51,18 @@ export const Password: React.FunctionComponent = () => {
       })
     ).warning
 
-    setError(
-      `${chrome.i18n.getMessage(
-        LocaleName[LocaleName.errorMessage]
-      )} ${warning}`
-    )
+    if (warning) {
+      setError(
+        `${chrome.i18n.getMessage(
+          LocaleName[LocaleName.errorMessage]
+        )} ${warning}`
+      )
+      return
+    }
+
+    setLocation(RoutePath.create)
 
     // 跳轉至建立錢包頁面
-    setLocation(RoutePath.create)
   }, [password])
 
   return (

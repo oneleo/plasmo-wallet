@@ -15,6 +15,7 @@ export enum StorageKey {
   checked,
   password,
   lastClosedTime,
+  wallet,
   hasWallet,
   test
 }
