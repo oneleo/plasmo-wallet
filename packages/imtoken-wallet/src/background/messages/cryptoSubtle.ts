@@ -64,7 +64,7 @@ const handler: Messaging.PlasmoMessaging.MessageHandler<
       {
         name: "AES-GCM",
         iv: initializationVector
-      },
+      } as Algorithm,
       key,
       new TextEncoder().encode(JSON.stringify(inputData))
     )
